@@ -1,0 +1,125 @@
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel App - Home</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="bg-dark text-white py-3">
+        <div class="container">
+            <h1 class="mb-0">Travel App</h1>
+        </div>
+    </header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('home') }}">Home</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('add_destination') }}">Add Destination</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <section class="p-3">
+        <h2 class="text-center fs-3 fw-bold">All Destinations</h2>
+        <div class="container">
+            <div class="row g-4">
+                {% for destination in destinations %}
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <img src="{{ destination.image_url }}" class="card-img-top" alt="{{ destination.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ destination.name }}</h5>
+                                <p class="card-text">Currency: {{ destination.currency }}</p>
+                                <p class="card-text"><small class="text-muted">Description: {{ destination.description }}</small></p>
+                                <p class="card-text"><small class="text-muted">ID: {{ destination.id }}</small></p>
+                                
+                                <a href="#" class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Comments Section -->
+                        <div class="mt-3">
+                            <h4>Comments</h4>
+                            <form id="commentForm_{{ destination.id }}" method="post">
+                                <div class="form-group">
+                                    <textarea name="content" class="form-control" placeholder="Your comment..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-secondary">Post Comment</button>
+                            </form>
+                        </div>
+                      
+                        {% for comment in comments %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex flex-start align-items-center mb-2">
+                                        <div class="d-flex flex-column">
+                                            <h5 class="mb-0">User {{ comment.userid }}</h5>
+                                            <small class="text-muted">Posted at {{ comment.created_at }}</small>
+                                        </div>
+                                    </div>
+                                    <!-- Comment Content -->
+                                    <p class="card-text">{{ comment.test }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>  
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    
+
+    <footer class="text-center">
+        <p>&copy; 2024 Travel App. All rights reserved.</p>
+    </footer>
+   
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                document.querySelectorAll('form[id^="commentForm_"]').forEach(function(form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        var formData = new FormData(this);
+                        var destinationId = this.id.replace('commentForm_', ''); // Extract destination ID
+                        
+                        fetch(`/post_comment/${destinationId}`, { // Use the extracted destination ID
+                            method: 'POST',
+                            body: formData
+                        })
+                      .then(response => response.json())
+                      .then(data => {
+                            if (data.status === 'success') {
+                                location.reload(); // Reload the page to show the new comment
+                            }
+                        });
+                    });
+                });
+            });
+            </script>
+    <!-- Include jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
