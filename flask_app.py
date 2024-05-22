@@ -7,7 +7,6 @@ from flask import jsonify
 # Assuming you have a variable `Base` that represents your SQLAlchemy declarative base
 from sqlalchemy.ext.declarative import declarative_base
 
-# context.configure(url='sqlite:///travel.db', target_metadata=target_metadata)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '7777'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///travel.db'  # Use SQLite for simplicity
